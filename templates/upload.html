@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="col-md-6 mx-auto text-white">
+  <h2 class="mb-4">Upload Dataset</h2>
+  <form method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <input class="form-control" type="file" name="file" required>
+    </div>
+    <button type="submit" class="btn btn-success">Upload</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="col-md-10 mx-auto text-white">
+  <h2 class="mb-4">Forecast History</h2>
+  {% for f in forecasts %}
+    <div class="card mb-3">
+      <div class="card-header bg-primary text-white">
+        SKU: {{ f.sku }} | Forecast Date: {{ f.date }}
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead><tr><th>Date</th><th>Quantity</th></tr></thead>
+          <tbody>
+            {% for row in f.data %}
+              <tr><td>{{ row.date }}</td><td>{{ row.quantity|round(2) }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

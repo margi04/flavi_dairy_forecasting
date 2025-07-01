@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Forecast Demand</h2>
+<form method="POST">
+  <label for="sku">Select SKU:</label>
+  <select name="sku">
+    {% for item in skus %}
+    <option value="{{ item }}">{{ item }}</option>
+    {% endfor %}
+  </select>
+  <label for="days">Number of Days to Forecast:</label>
+  <input type="number" name="days" min="1" value="7">
+  <input type="submit" value="Generate Forecast">
+</form>
+
+{% if forecast_table %}
+  <h3>Forecast Table</h3>
+  {{ forecast_table | safe }}
+  <h3>Forecast Graph</h3>
+  {{ graph_html | safe }}
+{% endif %}
+{% endblock %}

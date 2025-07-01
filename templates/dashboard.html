@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center text-white">
+  <h2 class="mb-4">Dashboard</h2>
+  <p>Welcome, {{ current_user.username }}!</p>
+  <div class="d-grid gap-3 col-6 mx-auto">
+    <a href="{{ url_for('upload') }}" class="btn btn-outline-light btn-lg">Upload Dataset</a>
+    <a href="{{ url_for('manual_add') }}" class="btn btn-outline-light btn-lg">Add Data Manually</a>
+    <a href="{{ url_for('forecast_view') }}" class="btn btn-outline-light btn-lg">Generate Forecast</a>
+    <a href="{{ url_for('history') }}" class="btn btn-outline-light btn-lg">View Forecast History</a>
+  </div>
+</div>
+{% endblock %}
