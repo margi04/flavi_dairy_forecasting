@@ -1,23 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Forecast Demand</h2>
-<form method="POST">
-  <label for="sku">Select SKU:</label>
-  <select name="sku">
-    {% for item in skus %}
-    <option value="{{ item }}">{{ item }}</option>
-    {% endfor %}
-  </select>
-  <label for="days">Number of Days to Forecast:</label>
-  <input type="number" name="days" min="1" value="7">
-  <input type="submit" value="Generate Forecast">
-</form>
+<div class="forecast-container">
+  <h2>Forecast Demand</h2>
+  {% if skus %}
+  <form method="POST" class="forecast-form">
+    <div class="form-group">
+      <label for="sku">Select SKU:</label>
+      <select name="sku" required>
+        <option value="">-- Select SKU --</option>
+        {% for item in skus %}
+        <option value="{{ item }}">{{ item }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="days">Number of Days to Forecast:</label>
+      <input type="number" name="days" min="1" value="7" required>
+    </div>
+    <button type="submit" class="btn">Generate Forecast</button>
+  </form>
+  {% else %}
+  <p><strong>No SKUs available.</strong> Please upload data first.</p>
+  {% endif %}
 
-{% if forecast_table %}
+  {% if forecast_table %}
   <h3>Forecast Table</h3>
-  {{ forecast_table | safe }}
+  <div class="table-container">
+    {{ forecast_table | safe }}
+  </div>
   <h3>Forecast Graph</h3>
-  {{ graph_html | safe }}
-{% endif %}
+  <div class="graph-container">
+    {{ graph_html | safe }}
+  </div>
+  {% endif %}
+</div>
 {% endblock %}

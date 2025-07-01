@@ -150,34 +150,40 @@ def manual_add():
 @app.route('/forecast', methods=['GET', 'POST'])
 @login_required
 def forecast_view():
+    skus = [row[0] for row in db.session.query(DemandData.sku).distinct().all()]
+
     if request.method == 'POST':
         sku = request.form['sku']
         days = int(request.form['days'])
 
-        # Load data for the SKU
-        df = pd.read_sql(
-            db.session.query(DemandData)
-            .filter_by(sku=sku)
-            .statement,
-            db.session.bind
-        )
-        df = df.sort_values('date')
+        query = db.session.query(DemandData).filter_by(sku=sku).order_by(DemandData.date)
+        rows = query.all()
 
-        # Set date as index
+        if not rows:
+            flash("No data found for selected SKU.")
+            return redirect(url_for('forecast_view'))
+
+        df = pd.DataFrame([{
+            'date': r.date,
+            'sku': r.sku,
+            'quantity': r.quantity
+        } for r in rows])
+
+        df = df.sort_values('date')
         df.set_index('date', inplace=True)
 
-        # Fit ARIMA
+        # Forecasting
         model = ARIMA(df['quantity'], order=(1,1,1))
         model_fit = model.fit()
-
-        # Forecast
         forecast = model_fit.forecast(steps=days)
         forecast_dates = pd.date_range(start=df.index[-1] + pd.Timedelta(days=1), periods=days)
 
-        # Build DataFrame
-        forecast_df = pd.DataFrame({'date': forecast_dates, 'predicted_quantity': forecast})
+        forecast_df = pd.DataFrame({
+            'date': forecast_dates,
+            'predicted_quantity': forecast
+        })
 
-        # Create Plotly chart
+        # Plotly chart
         trace_past = go.Scatter(
             x=df.index,
             y=df['quantity'],
@@ -201,12 +207,14 @@ def forecast_view():
 
         return render_template(
             'forecast.html',
-            sku=sku,
+            skus=skus,
             forecast_table=forecast_df.to_html(index=False),
             graph_html=graph_html
         )
 
-    return render_template('forecast.html')
+    return render_template('forecast.html', skus=skus)
+
+
 
 @app.route('/history')
 @login_required
